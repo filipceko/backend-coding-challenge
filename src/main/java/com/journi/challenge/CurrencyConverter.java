@@ -3,7 +3,10 @@ package com.journi.challenge;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.context.annotation.Bean;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
@@ -12,11 +15,14 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@Named
+@Singleton
 public class CurrencyConverter {
     private final Map<String, String> supportedCountriesCurrency;
     private final Map<String, Double> currencyEurRate;
 
     public CurrencyConverter() {
+        //Supported currency map
         supportedCountriesCurrency = new HashMap<>();
         supportedCountriesCurrency.put("AT", "EUR");
         supportedCountriesCurrency.put("DE", "EUR");
@@ -29,7 +35,7 @@ public class CurrencyConverter {
         supportedCountriesCurrency.put("BR", "BRL");
         supportedCountriesCurrency.put("US", "USD");
         supportedCountriesCurrency.put("CA", "CAD");
-
+        //currency translation rate
         currencyEurRate = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -48,5 +54,9 @@ public class CurrencyConverter {
 
     public Double convertEurToCurrency(String currencyCode, Double eurValue) {
         return eurValue * currencyEurRate.getOrDefault(currencyCode, 1.0);
+    }
+
+    public Double convertCurrencyToEur(String currencyCode, Double value) {
+        return value / currencyEurRate.getOrDefault(currencyCode, 1.0);
     }
 }

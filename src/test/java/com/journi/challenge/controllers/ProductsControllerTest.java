@@ -1,5 +1,6 @@
 package com.journi.challenge.controllers;
 
+import com.journi.challenge.CurrencyConverter;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
@@ -19,6 +20,8 @@ class ProductsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private CurrencyConverter currencyConverter;
 
     @Test
     public void shouldListProductsWithCurrencyCodeAndConvertedPriceDefault() throws Exception {
@@ -31,7 +34,9 @@ class ProductsControllerTest {
     public void shouldListProductsWithCurrencyCodeAndConvertedPriceBR() throws Exception {
         mockMvc.perform(get("/products?countryCode=BR"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", IsEqual.equalTo(4)));
+                .andExpect(jsonPath("$.length()", IsEqual.equalTo(4)))
+                .andExpect(jsonPath("$.[0].price",
+                        IsEqual.equalTo(currencyConverter.convertEurToCurrency("BRL", 25.0))));
     }
 
     @Test
